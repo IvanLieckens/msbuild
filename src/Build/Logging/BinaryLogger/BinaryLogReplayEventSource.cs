@@ -33,7 +33,8 @@ namespace Microsoft.Build.Logging
             using (var stream = new FileStream(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 var gzipStream = new GZipStream(stream, CompressionMode.Decompress, leaveOpen: true);
-                var binaryReader = new BinaryReader(gzipStream);
+                var bufferedStream = new BufferedStream(gzipStream, 32768);
+                var binaryReader = new BinaryReader(bufferedStream);
 
                 int fileFormatVersion = binaryReader.ReadInt32();
 
@@ -45,7 +46,7 @@ namespace Microsoft.Build.Logging
                     throw new NotSupportedException(text);
                 }
 
-                var reader = new BuildEventArgsReader(binaryReader, fileFormatVersion);
+                using var reader = new BuildEventArgsReader(binaryReader, fileFormatVersion);
                 while (true)
                 {
                     if (cancellationToken.IsCancellationRequested)
