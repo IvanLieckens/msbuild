@@ -784,9 +784,12 @@ namespace Microsoft.Build.Logging
                 nameValueListBuffer.Clear();
             }
 
-            foreach (var kvp in keyValuePairs)
+            if (keyValuePairs != null)
             {
-                nameValueListBuffer.Add(kvp);
+                foreach (var kvp in keyValuePairs)
+                {
+                    nameValueListBuffer.Add(kvp);
+                }
             }
 
             WriteNameValueList();
